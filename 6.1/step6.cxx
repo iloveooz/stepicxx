@@ -1,39 +1,68 @@
 	#include <cstddef>
 	#include <iostream>
+	#include <algorithm>
 
 	template <typename T>
 	class Array {
-		// Список операций:
-		//
-		// explicit Array(size_t size = 0, const T& value = T())
-		//   конструктор класса, который создает
-		//   Array размера size, заполненный значениями
-		//   value типа T. Считайте что у типа T есть
-		//   конструктор, который можно вызвать без
-		//   без параметров, либо он ему не нужен.
-		//
-		// Array(const Array &)
-		//   конструктор копирования, который создает
-		//   копию параметра. Считайте, что для типа
-		//   T определен оператор присваивания.
-		//
-		// ~Array()
-		//   деструктор, если он вам необходим.
-		//
-		// Array& operator=(...)
-		//   оператор присваивания.
-		//
-		// size_t size() const
-		//   возвращает размер массива (количество
-		//                              элементов).
-		//
-		// T& operator[](size_t)
-		// const T& operator[](size_t) const
-		//   две версии оператора доступа по индексу.
+	public:
+		// конструктор класса
+		explicit Array(size_t size = 0, const T & value = T()) :
+		size_(size), data_(new T(size)) {
+			std::fill_n(data_, size, value);
+		}
+				
+		// который создает Array размера size, заполненный значениями
+		// value типа T. 
+		// Считайте что у типа T есть конструктор, который можно вызвать без
+		// без параметров, либо он ему не нужен.
+		
+		//   конструктор копирования, который создает копию параметра. 
+		Array(const Array &A) : size_(A.size_), data_(new T(size_)) {
+			std::copy_n(A.data_, size, data_);
+		}
+
+		// деструктор
+		~Array() {
+			delete [] data_;
+		}
+		
+		void swap(Array &other) {
+			std::swap(size_, other.size_);
+			std::swap(data_, other.data_);
+		}		
+		
+		// оператор присваивания.		
+		Array & operator = (const Array &A) {
+			if (&A != this)
+				Array(A).swap(*this);
+			return *this;
+		}
+		
+		// возвращает размер массива (количество элементов).
+		size_t size() const {
+			return size_;
+		}
+		
+		// две версии оператора доступа по индексу
+		T& operator [] (size_t i) {
+			return data_[i];
+		}
+		
+		const T& operator [] (size_t i) const {
+			return data_[i];
+		}	
+		
+	private:
+		T * data_;
+		size_t size_;
+		
 	};
 	
 	int main() {
 		
+		Array <int> mas(10, 1);
+		
+		std::cout << mas[0] << '\n';
 		
 		return 0;
 	}
